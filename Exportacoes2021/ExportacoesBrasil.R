@@ -200,4 +200,4 @@ BrazilianRegionMap =
 ggsave(filename = 'BrazilianRegionMap.png',plot = BrazilianRegionMap, width = 19.32, height = 12, device = 'png', 
        path = project_directory)
 
-#Further changes were made on Canvas. Hopefully, I'll use {ggtext} to better annotate on the next chart. 
+#Further changes were made on Canvas. Hopefully, I'll use {ggtext} to better annotate on the next chart.  
