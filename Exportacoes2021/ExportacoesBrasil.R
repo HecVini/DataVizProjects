@@ -20,12 +20,12 @@ library(rjson) # JSON for R
 library(WeightedTreemaps) # Generate and Plot Voronoi or Sunburst Treemaps from Hierarchical Data
 
 #### 2. Load Raw Data ####
-project_directory = '/Users/hec_vini/Library/CloudStorage/OneDrive-Personal/GitHub Repo/DataViz/Exportacoes2021/'
-datasets_directory = '/Users/hec_vini/Library/CloudStorage/OneDrive-FundacaoGetulioVargas-FGV/gv_agro/datasets/'
+project_directory = '/Users/hec_vini/Library/CloudStorage/OneDrive-Personal/GitHub Repo/DataVizProjects/Exportacoes2021/'
+#Just set the path for your working directory
 
-StatesCodes.R = geobr::read_state('all') %>% tibble() 
-ExportacoesBrasil.R = fread(paste0(project_directory,'ExportacoesBrasileiras2021.csv')) %>% clean_names() %>% tibble()
-TabelasAuxiliares.R = fread(paste0(project_directory,'TabelasAuxiliaresComexStat.csv')) %>% clean_names()
+StatesCodes.R = geobr::read_state('all') %>% tibble() #Tiblle with Brazilian states data
+ExportacoesBrasil.R = fread(paste0(project_directory,'ExportacoesBrasileiras2021.csv')) %>% clean_names() %>% tibble() #Tibble with Brazilian Exports
+TabelasAuxiliares.R = fread(paste0(project_directory,'TabelasAuxiliaresComexStat.csv')) %>% clean_names() #Tibble with exports nomenclature
 
 #### 3. Clean Data ####
 StatesCodes = StatesCodes.R %>% subset(select = c(code_state,abbrev_state,name_state))
@@ -45,7 +45,7 @@ TabelasAuxiliares = TabelasAuxiliares %>% mutate(
   code_ncm = case_when(nchar(code_ncm) == 7 ~ paste0('0',code_ncm),
                        TRUE ~ as.character(code_ncm))) #Clean and organize HS codes. I used chr (insted of dbl) because the number of characters matter to set the code. 
 TabelasAuxiliares = TabelasAuxiliares %>% subset(select = c(1,3,5,7,2,4,6,8))
-TabelasAuxiliares = TabelasAuxiliares %>% arrange(code_ncm) 
+TabelasAuxiliares = TabelasAuxiliares %>% arrange(code_ncm) #Dataframe with each product NCM and SH. SH2: less specific. SH6: more specific. NCM: Mercosul common names 
 
 TabelasAuxiliaresValidation = 
   create_agent(tbl = TabelasAuxiliares) %>%
@@ -55,16 +55,15 @@ TabelasAuxiliaresValidation =
 SH2Codes = TabelasAuxiliares %>% subset(select = c(code_sh2,desc_sh2)) %>% unique() #Dataframe with distinct HS2 codes 
 SH4Codes = TabelasAuxiliares %>% subset(select = c(code_sh4,desc_sh4)) %>% unique() #Dataframe with distinct HS4 codes 
 
-ExportacoesBrasil = ExportacoesBrasil.R %>% subset(select = c(state,sh2_code,sh4_code,us_fob))
-ExportacoesBrasil[,c(2,3)] = ExportacoesBrasil[,c(2,3)] %>% lapply(function(x) as.character(as.integer(x)))
+ExportacoesBrasil = ExportacoesBrasil.R %>% subset(select = c(state,sh2_code,sh4_code,us_fob)) #From raw data, select desired columns
+ExportacoesBrasil[,c(2,3)] = ExportacoesBrasil[,c(2,3)] %>% lapply(function(x) as.character(as.integer(x))) #Set ideal formats
 ExportacoesBrasil[,4] = ExportacoesBrasil[,4] %>% lapply(function(x) as.double(as.numeric(x)))
-ExportacoesBrasil = ExportacoesBrasil %>% setnames(c('name_state','code_sh2','code_sh4','fob'))
+ExportacoesBrasil = ExportacoesBrasil %>% setnames(c('name_state','code_sh2','code_sh4','fob')) #Arrange columns
 ExportacoesBrasil = ExportacoesBrasil %>% mutate(
   code_sh2 = case_when(nchar(code_sh2) == 1 ~ paste0('0',code_sh2),
                        TRUE ~ as.character(code_sh2)),
   code_sh4 = case_when(nchar(code_sh4) == 3 ~ paste0('0',code_sh4),
-                       TRUE ~ as.character(code_sh4)))
-ExportacoesBrasil %>% subset(select = 'name_state') %>% unique() %>% print(n = 28)
+                       TRUE ~ as.character(code_sh4))) #Properly name code columns. nchar matters here. "07" is not "7"
 ExportacoesBrasil = ExportacoesBrasil %>% 
   mutate(name_state = case_when(name_state == 'Rio de Janeiro' ~ 'Rio De Janeiro',
                                 name_state == 'Rio Grande do Sul' ~ 'Rio Grande Do Sul',
@@ -75,7 +74,7 @@ ExportacoesBrasil = ExportacoesBrasil %>%
 ExportacoesBrasil = ExportacoesBrasil %>% mutate(fob = fob/10^9) #Tranform nominal USD into bn of USD.
 ExportacoesBrasil = left_join(ExportacoesBrasil,StatesCodes, by = 'name_state')
 ExportacoesBrasil = ExportacoesBrasil %>% drop_na(id_state)
-ExportacoesBrasil = ExportacoesBrasil %>% subset(select = c(id_state,code_state,code_sh2,code_sh4,fob))
+ExportacoesBrasil = ExportacoesBrasil %>% subset(select = c(id_state,code_state,code_sh2,code_sh4,fob)) #Rearrange
 ExportacoesBrasil = ExportacoesBrasil %>% 
   mutate(region = case_when(id_state %in% c(10:19) ~ 'N',
                             id_state %in% c(21:29) ~ 'NE',
@@ -131,7 +130,7 @@ DrawTopStatesMap = drawTreemap(TopStatesMap,color_type = 'categorical',color_lev
                                border_level = c(1,2,3),border_size = c(10,2,2),
                                border_color = c('#000000','#ffffff','#ffffff'),
                                label_level = 3, label_size = .5,title = NULL, legend= FALSE,add = TRUE)
-#Image saved mannualy. I think there's no "ggsave" function for this typo of object.
+#Image saved mannualy. I think there's no "ggsave()" function for this type of object.
 
 #### 5. Make the BarChart
 TopExportsChartData = TopExports %>% subset(select = c(code_sh2,fob))
@@ -201,5 +200,4 @@ BrazilianRegionMap =
 ggsave(filename = 'BrazilianRegionMap.png',plot = BrazilianRegionMap, width = 19.32, height = 12, device = 'png', 
        path = project_directory)
 
-
-view(SH2Codes)
+#Further changes were made on Canvas. Hopefully, I'll use {ggtext} to better annotate on the next chart. 
