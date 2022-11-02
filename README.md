@@ -2,6 +2,13 @@
 # DataViz
 DataViz is an exercise of patience, effort, and constant learning. As an enthusiast, this repository aims to track some visualizations and (hopefully) inspire people. 
 
+## [2021 Brazilian Exports](https://github.com/HecVini/DataVizProjects/blob/main/Exportacoes2021/ExportacoesBrasil.R)
+In 2021, Brazil exported nearly USD 280 Bn in goods. The lead export was iron ore, and the more significant export state was São Paulo. Voronoi Treemaps are such a valuable tool to display proportions. Each area is equivalent to the variant weight, and colors are helpful to categorize variables. This viz was inspired by Raul Amoros and Jennifer West's work for Visual Capitalist.
+<p align="center">
+  <img width="800" src="https://github.com/HecVini/DataVizProjects/blob/main/Exportacoes2021/ExportacoesBrasileiras2021.png" >
+</p>
+
+
 ## [2022 Brazilian Elections](https://github.com/HecVini/DataVizProjects/blob/main/Brazilian2022Elections_DorlingCartogram/2022BrazilianElectionResults_DorlingCartogram.R)
 In late 2022, Lula and Bolsonaro run for the Brazilian Presidency. Understanding the dynamics of votes in all 5570 Brazilian cities might be a challenging duty. But by grouping it by immediate regions, we can understand it better. Also, Dorling cartograms are a really useful tool to reduce the influence of large, but sparsely populated regions. Here there are some thoughts on it:
 <p align="center">
